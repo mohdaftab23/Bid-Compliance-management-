@@ -269,8 +269,8 @@ export const TenderDetailsView: React.FC<TenderDetailsViewProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {bidders.map((b, idx) => {
-                  const report = reports[b.id];
+                {(bidders || []).filter((b): b is Bidder => Boolean(b && b.id)).map((b, idx) => {
+                  const report = b?.id ? reports[b.id] : undefined;
                   const score = report?.overallScore ?? '--';
                   const rec = report?.recommendation ?? 'PENDING';
                   const passedReqs = report?.eligibilityChecks ? report.eligibilityChecks.filter((c) => c.status === 'PASS').length : 0;

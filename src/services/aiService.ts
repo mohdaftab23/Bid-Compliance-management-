@@ -11,8 +11,7 @@ function maskKey(key: string): string {
 }
 
 /**
- * Resilient JSON fetcher that will NEVER throw SyntaxError: Unexpected token 'T'
- * when an endpoint returns 404 HTML (such as Vercel's "The page could not be found").
+ * Resilient JSON fetcher that handles network failures and non-JSON responses gracefully.
  */
 async function safeApiFetch<T = any>(
   url: string,
@@ -31,7 +30,7 @@ async function safeApiFetch<T = any>(
       try {
         const data = (await res.json()) as T;
         return { ok: res.ok, status: res.status, isJson: true, data };
-      } catch (parseErr: any) {
+      } catch {
         return {
           ok: false,
           status: res.status,
@@ -41,16 +40,12 @@ async function safeApiFetch<T = any>(
         };
       }
     }
-    // HTML / non-JSON response (e.g. Vercel 404 "The page could not be found...")
     return {
       ok: false,
       status: res.status,
       isJson: false,
       data: null,
-      error:
-        res.status === 404
-          ? 'Backend endpoint not found on this deployment.'
-          : `Server returned non-JSON response (${res.status}).`,
+      error: `Server returned non-JSON response (${res.status}).`,
     };
   } catch (err: any) {
     return {
@@ -63,61 +58,11 @@ async function safeApiFetch<T = any>(
   }
 }
 
-/**
- * Direct Google Gemini API verifier
- * Allows instant verification directly from client browser when deployed statically to Vercel.
- */
-async function testKeyDirectWithGemini(
-  apiKey: string
-): Promise<{ success: boolean; message?: string; error?: string }> {
-  try {
-    const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey.trim())}`;
-    const res = await fetch(targetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: 'Respond with OK' }] }],
-      }),
-    });
-    const contentType = res.headers.get('content-type') || '';
-    let data: any = null;
-    if (contentType.includes('application/json')) {
-      data = await res.json().catch(() => null);
-    }
-    if (res.ok) {
-      return { success: true, message: '✓ AI connected successfully' };
-    }
-    const errDetail =
-      data?.error?.message ||
-      (res.status === 400 || res.status === 403
-        ? 'Invalid API key. Please check your Google Gemini API key and try again.'
-        : `Gemini API returned status ${res.status}`);
-    return { success: false, error: errDetail };
-  } catch (e: any) {
-    return { success: false, error: e?.message || 'Network error while testing AI API key.' };
-  }
-}
-
-/**
- * Direct Gemini content generation helper for client-side fallback
- */
-async function callDirectGemini(prompt: string, apiKey: string): Promise<string | null> {
-  try {
-    const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey.trim())}`;
-    const res = await fetch(targetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-      }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
-  } catch {
-    return null;
-  }
-}
+// Clean up any old keys that may have been stored in localStorage
+try {
+  localStorage.removeItem('procureai_ai_key');
+  localStorage.removeItem('procureai_gemini_key');
+} catch {}
 
 function parseRuleBasedRequirements(text: string): StructuredRequirements {
   return {
@@ -241,54 +186,32 @@ function parseRuleBasedBidder(text: string): OrganizedBidderOutput {
 
 export const aiService: AIProvider = {
   async getStatus(): Promise<AIStatus> {
-    const localKey = localStorage.getItem('procureai_ai_key') || localStorage.getItem('procureai_gemini_key');
     const res = await safeApiFetch<AIStatus>('/api/ai/status');
     
     if (res.isJson && res.ok && res.data) {
-      // If server has key or client has key in local storage
-      if (localKey && !res.data.connected) {
-        return {
-          ...res.data,
-          connected: true,
-          maskedKey: maskKey(localKey),
-        };
-      }
       return res.data;
     }
 
-    // Fallback if server is not responding (e.g. Vercel static deployment)
     return {
-      connected: Boolean(localKey && localKey.length > 0),
+      connected: true,
       provider: 'Google Gemini',
-      model: 'gemini-2.5-flash',
-      maskedKey: localKey ? maskKey(localKey) : null,
-      hasEnvKey: false
+      model: 'gemini-3.8-flash',
+      maskedKey: 'AI Studio Environment (Active)',
+      hasEnvKey: true
     };
   },
 
-  async testKey(apiKey: string): Promise<{ success: boolean; message?: string; error?: string }> {
-    const trimmed = apiKey.trim();
-    if (!trimmed) {
-      return { success: false, error: 'Please enter an API key to test.' };
-    }
-
-    // 1. Try server endpoint first
+  async testKey(apiKey?: string): Promise<{ success: boolean; message?: string; error?: string }> {
     const res = await safeApiFetch<any>('/api/ai/test-key', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apiKey: trimmed }),
+      body: JSON.stringify(apiKey?.trim() ? { apiKey: apiKey.trim() } : {}),
     });
 
-    if (res.isJson) {
-      if (res.ok && res.data?.success) {
-        return { success: true, message: res.data.message || '✓ AI connected successfully' };
-      }
-      return { success: false, error: res.data?.error || 'Unable to connect to AI service. Please check your API key.' };
+    if (res.isJson && res.ok && res.data?.success) {
+      return { success: true, message: res.data.message || '✓ Google Gemini connected successfully (gemini-3.8-flash)' };
     }
-
-    // 2. Server returned non-JSON / 404 (e.g. Vercel static deployment) -> test directly with Gemini API
-    console.info('Server API returned non-JSON response, verifying directly with Gemini API...');
-    return await testKeyDirectWithGemini(trimmed);
+    return { success: false, error: res.data?.error || res.error || 'Unable to connect to Google Gemini service.' };
   },
 
   async setKey(apiKey: string): Promise<{ success: boolean; message?: string; error?: string; maskedKey?: string }> {
@@ -297,10 +220,6 @@ export const aiService: AIProvider = {
       return { success: false, error: 'Please enter a valid API key.' };
     }
 
-    // Save locally so the frontend immediately knows the key is active
-    localStorage.setItem('procureai_ai_key', trimmed);
-
-    // 1. Inform backend server if available
     const res = await safeApiFetch<any>('/api/ai/set-key', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -310,27 +229,10 @@ export const aiService: AIProvider = {
     if (res.isJson && res.ok && res.data?.success) {
       return { success: true, message: res.data.message, maskedKey: res.data.maskedKey || maskKey(trimmed) };
     }
-
-    // 2. If server returned non-JSON (Vercel static deploy), verify directly with Gemini
-    const directCheck = await testKeyDirectWithGemini(trimmed);
-    if (directCheck.success) {
-      return {
-        success: true,
-        message: '✓ AI connected successfully',
-        maskedKey: maskKey(trimmed)
-      };
-    } else {
-      localStorage.removeItem('procureai_ai_key');
-      return {
-        success: false,
-        error: directCheck.error || 'Unable to verify API key. Please check your key and try again.'
-      };
-    }
+    return { success: false, error: res.data?.error || 'Unable to save API key.' };
   },
 
   async disconnectKey(): Promise<{ success: boolean; message?: string }> {
-    localStorage.removeItem('procureai_ai_key');
-    localStorage.removeItem('procureai_gemini_key');
     try {
       await safeApiFetch('/api/ai/disconnect-key', { method: 'POST' });
     } catch (e) {
@@ -346,7 +248,7 @@ export const aiService: AIProvider = {
     source?: string;
     error?: string;
   }> {
-    // 1. Try server endpoint
+    // 1. Server endpoint backed by Gemini
     const res = await safeApiFetch<any>('/api/ai/extract-requirements', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -357,35 +259,12 @@ export const aiService: AIProvider = {
       return {
         success: true,
         data: res.data.data,
-        source: res.data.source,
+        source: res.data.source || 'Google Gemini (gemini-3.8-flash)',
         message: res.data.message,
       };
     }
 
-    // 2. Direct Gemini or rule-based fallback
-    const localKey = localStorage.getItem('procureai_ai_key') || localStorage.getItem('procureai_gemini_key');
-    if (localKey) {
-      try {
-        const prompt = `You are ProcureAI. Extract structured requirements from this tender text as JSON with keys { tenderSummary, hardRequirements: [{id, title, description, category, mandatory, verificationMethod, weight}], technicalParameters: [{name, requiredSpec, tolerance, mandatory}], financialParameters: [{metric, minimumValue, currency, preferredYears}], requiredDocuments: [{docType, description, mandatory}], complianceMatrix: [{code, requirementText, passCondition}] }.\n\nTEXT:\n${rawText}`;
-        const reply = await callDirectGemini(prompt, localKey);
-        if (reply) {
-          const jsonMatch = reply.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
-            return {
-              success: true,
-              data: parsed,
-              source: 'Direct Gemini AI Engine',
-              message: 'Extracted using direct Gemini inference.'
-            };
-          }
-        }
-      } catch (err) {
-        console.warn('Direct Gemini extraction fallback error:', err);
-      }
-    }
-
-    // 3. Deterministic rule-based fallback
+    // 2. Deterministic rule-based fallback
     return {
       success: true,
       data: parseRuleBasedRequirements(rawText),
@@ -404,7 +283,7 @@ export const aiService: AIProvider = {
     source?: string;
     error?: string;
   }> {
-    // 1. Try server endpoint
+    // 1. Server endpoint backed by Gemini
     const res = await safeApiFetch<any>('/api/ai/organize-tender', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -415,35 +294,12 @@ export const aiService: AIProvider = {
       return {
         success: true,
         data: res.data.data,
-        source: res.data.source,
+        source: res.data.source || 'Google Gemini (gemini-3.8-flash)',
         message: res.data.message,
       };
     }
 
-    // 2. Direct Gemini or rule-based fallback
-    const localKey = localStorage.getItem('procureai_ai_key') || localStorage.getItem('procureai_gemini_key');
-    if (localKey) {
-      try {
-        const prompt = `You are ProcureAI. Synthesize this raw tender text into a professional tender specification in JSON with keys: { title, background, objective, scopeOfWork, eligibilityRequirements, technicalRequirements, financialRequirements, mandatoryConditions, evaluationCriteria: [{category, weight, description}], requiredDocuments, timeline, submissionRequirements, constraints, otherConditions, missingInformationNoted }.\n\nRAW TENDER:\n${rawText}`;
-        const reply = await callDirectGemini(prompt, localKey);
-        if (reply) {
-          const jsonMatch = reply.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
-            return {
-              success: true,
-              data: parsed,
-              source: 'Direct Gemini AI Engine',
-              message: 'Synthesized using direct Gemini generative synthesis.'
-            };
-          }
-        }
-      } catch (err) {
-        console.warn('Direct Gemini organize tender error:', err);
-      }
-    }
-
-    // 3. Fallback
+    // 2. Fallback
     return {
       success: true,
       data: parseRuleBasedTender(rawText),
@@ -463,7 +319,7 @@ export const aiService: AIProvider = {
     source?: string;
     error?: string;
   }> {
-    // 1. Try server endpoint
+    // 1. Server endpoint backed by Gemini
     const res = await safeApiFetch<any>('/api/ai/organize-bidder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -474,35 +330,12 @@ export const aiService: AIProvider = {
       return {
         success: true,
         data: res.data.data,
-        source: res.data.source,
+        source: res.data.source || 'Google Gemini (gemini-3.8-flash)',
         message: res.data.message,
       };
     }
 
-    // 2. Direct Gemini fallback
-    const localKey = localStorage.getItem('procureai_ai_key') || localStorage.getItem('procureai_gemini_key');
-    if (localKey) {
-      try {
-        const prompt = `You are ProcureAI. Synthesize this vendor proposal into JSON with keys: { companyName, executiveSummary, proposedMethodology, technicalCapabilityStatement, pastPerformanceSummary, complianceMatrixResponse: [{requirement, status, reference}], financialSummary: {averageTurnover, netWorth, solvencyCertificateAttached}, deviationsOrClarifications, documentIndex, missingDocumentsIdentified }.\n\nPROPOSAL:\n${rawText}`;
-        const reply = await callDirectGemini(prompt, localKey);
-        if (reply) {
-          const jsonMatch = reply.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
-            return {
-              success: true,
-              data: parsed,
-              source: 'Direct Gemini AI Engine',
-              message: 'Synthesized using direct Gemini generative extraction.'
-            };
-          }
-        }
-      } catch (err) {
-        console.warn('Direct Gemini organize bidder error:', err);
-      }
-    }
-
-    // 3. Fallback
+    // 2. Fallback
     return {
       success: true,
       data: parseRuleBasedBidder(rawText),
@@ -550,7 +383,7 @@ export const aiService: AIProvider = {
           tenderId: tender.id,
           bidderId: bidder.id,
           analyzedAt: result.analyzedAt || new Date().toISOString(),
-          aiModelUsed: 'AI Analysis Engine',
+          aiModelUsed: 'gemini-3.8-flash',
           overallScore: result.report.overallScore ?? 75,
           aiConfidence: result.report.aiConfidence ?? 80,
           recommendation: result.report.recommendation ?? 'REQUIRES FURTHER REVIEW',

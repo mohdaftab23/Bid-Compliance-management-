@@ -122,7 +122,7 @@ export const UnifiedFileUpload: React.FC<UnifiedFileUploadProps> = ({
               category: t.category,
             };
 
-            onFilesChange([...files.filter(f => f.id !== t.id), newUploadedItem]);
+            onFilesChange([...(files || []).filter(f => f && f.id !== t.id), newUploadedItem]);
 
             return {
               ...t,
@@ -251,8 +251,8 @@ export const UnifiedFileUpload: React.FC<UnifiedFileUploadProps> = ({
   };
 
   const handleRemoveFile = (id: string) => {
-    onFilesChange(files.filter((f) => f.id !== id));
-    setActiveTasks((prev) => prev.filter((t) => t.id !== id));
+    onFilesChange((files || []).filter((f) => f && f.id !== id));
+    setActiveTasks((prev) => prev.filter((t) => t && t.id !== id));
     if (previewFile?.id === id) {
       setPreviewFile(null);
     }
@@ -273,8 +273,8 @@ export const UnifiedFileUpload: React.FC<UnifiedFileUploadProps> = ({
     if (!targetId) return;
 
     // Remove old
-    onFilesChange(files.filter(f => f.id !== targetId));
-    setActiveTasks(prev => prev.filter(t => t.id !== targetId));
+    onFilesChange((files || []).filter(f => f && f.id !== targetId));
+    setActiveTasks(prev => prev.filter(t => t && t.id !== targetId));
 
     // Process new
     processIncomingFiles([newFile]);
@@ -569,7 +569,7 @@ export const UnifiedFileUpload: React.FC<UnifiedFileUploadProps> = ({
           </div>
 
           <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl bg-white overflow-hidden shadow-xs">
-            {files.map((file) => (
+            {(files || []).filter((file): file is UploadedFileItem => Boolean(file && file.id)).map((file) => (
               <div
                 key={file.id}
                 className="px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:bg-slate-50/80 transition-colors"

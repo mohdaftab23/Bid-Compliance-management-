@@ -67,17 +67,20 @@ export const BidderComparisonView: React.FC<BidderComparisonViewProps> = ({
     );
   }
 
+  // Filter valid bidders with valid IDs
+  const validBidders = (bidders || []).filter((b): b is Bidder => Boolean(b && b.id));
+
   // Sort bidders by evaluated score descending
-  const sortedBidders = [...bidders].sort((a, b) => {
-    const scoreA = reports[a.id]?.overallScore ?? 0;
-    const scoreB = reports[b.id]?.overallScore ?? 0;
+  const sortedBidders = [...validBidders].sort((a, b) => {
+    const scoreA = (a?.id && reports[a.id]?.overallScore) ?? 0;
+    const scoreB = (b?.id && reports[b.id]?.overallScore) ?? 0;
     return scoreB - scoreA;
   });
 
   const topBidder = sortedBidders[0];
-  const topReport = topBidder ? reports[topBidder.id] : null;
+  const topReport = topBidder?.id ? reports[topBidder.id] : null;
 
-  if (bidders.length === 0) {
+  if (validBidders.length === 0) {
     return (
       <div className="space-y-6">
         {/* Top Header */}

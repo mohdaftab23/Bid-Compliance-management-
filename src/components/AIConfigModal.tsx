@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Sparkles, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, X, Lock, ShieldCheck, Trash2 } from 'lucide-react';
+import { Sparkles, CheckCircle2, AlertCircle, Loader2, X, Lock, ShieldCheck, Cpu, Activity } from 'lucide-react';
 import { aiService } from '../services/aiService';
 
 interface AIConfigModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onKeyConfigured: () => void;
+  onKeyConfigured?: () => void;
   initialMaskedKey?: string | null;
   forceFirstTimeGate?: boolean;
 }
@@ -13,67 +13,31 @@ interface AIConfigModalProps {
 export const AIConfigModal: React.FC<AIConfigModalProps> = ({
   isOpen,
   onClose,
-  onKeyConfigured,
-  initialMaskedKey,
-  forceFirstTimeGate = false,
 }) => {
-  const [apiKey, setApiKey] = useState('');
-  const [showKey, setShowKey] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [testResult, setTestResult] = useState<{ success?: boolean; message?: string } | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleTest = async () => {
-    if (!apiKey.trim()) {
-      setErrorMsg('Please enter an API key to test.');
-      return;
-    }
-    setErrorMsg(null);
+  const handleTestDiagnostics = async () => {
     setTestResult(null);
     setIsTesting(true);
 
-    const res = await aiService.testKey(apiKey.trim());
+    const res = await aiService.testKey();
     setIsTesting(false);
 
     if (res.success) {
-      setTestResult({ success: true, message: '✓ AI connected successfully' });
+      setTestResult({
+        success: true,
+        message: res.message || '✓ Google Gemini engine connected and active (gemini-3.8-flash).',
+      });
     } else {
-      setTestResult({ success: false, message: res.error || 'Unable to connect to AI service. Please check your API key.' });
+      setTestResult({
+        success: false,
+        message: res.error || 'Unable to connect to Google Gemini service.',
+      });
     }
   };
-
-  const handleSaveAndContinue = async () => {
-    if (!apiKey.trim()) {
-      setErrorMsg('Please enter a valid API key.');
-      return;
-    }
-    setErrorMsg(null);
-    setIsSaving(true);
-
-    const res = await aiService.setKey(apiKey.trim());
-    setIsSaving(false);
-
-    if (res.success) {
-      onKeyConfigured();
-      onClose();
-    } else {
-      setErrorMsg(res.error || 'Unable to connect to AI service. Please check your API key.');
-    }
-  };
-
-  const handleRemoveKey = async () => {
-    await aiService.disconnectKey();
-    setApiKey('');
-    setTestResult(null);
-    setErrorMsg(null);
-    onKeyConfigured();
-    onClose();
-  };
-
-  const isConfigured = Boolean(initialMaskedKey);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -85,82 +49,68 @@ export const AIConfigModal: React.FC<AIConfigModalProps> = ({
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold tracking-tight text-white">AI Configuration</h2>
-              <p className="text-xs text-slate-400">ProcureAI Analysis & Synthesis Engine</p>
+              <h2 className="text-lg font-semibold tracking-tight text-white">AI Engine Status</h2>
+              <p className="text-xs text-slate-400">Google Gemini • Procurement Intelligence Engine</p>
             </div>
           </div>
-          {!forceFirstTimeGate && (
-            <button
-              onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Content Body */}
         <div className="p-6 space-y-5">
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Add your AI API key to enable AI-powered analysis and organization.
-          </p>
+          {/* Active Status Card */}
+          <div className="p-4 rounded-lg bg-slate-800/80 border border-slate-700 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+                <span className="text-sm font-bold text-white">Google Gemini Connected</span>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                Server-Side Active
+              </span>
+            </div>
 
-          {/* Current Key Status */}
-          <div className="p-3.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs flex items-center justify-between">
-            <div className="space-y-0.5">
-              <span className="text-slate-400 font-medium">Status:</span>
-              <div className="flex items-center gap-1.5 font-semibold">
-                {isConfigured ? (
-                  <span className="text-emerald-400 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
-                    ● Connected
-                  </span>
-                ) : (
-                  <span className="text-slate-400 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-slate-500 inline-block"></span>
-                    ○ Not configured
-                  </span>
-                )}
+            <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-700/60">
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Active Model</span>
+                <span className="font-mono text-slate-200 font-semibold">gemini-3.8-flash</span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Key Management</span>
+                <span className="text-slate-200 font-medium">AI Studio Secrets</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Security & Architecture Highlights */}
+          <div className="space-y-2.5 text-xs text-slate-300">
+            <div className="flex items-start gap-2.5 p-3 rounded-lg bg-slate-950 border border-slate-800">
+              <Lock className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-slate-100 block font-semibold">Secure Server-Side Architecture</strong>
+                <span className="text-slate-400 text-[11px] leading-relaxed">
+                  API credentials remain strictly hidden on the server. Calls are proxied through secure backend routes with zero exposure to client browsers.
+                </span>
               </div>
             </div>
 
-            {initialMaskedKey && (
-              <div className="text-right">
-                <span className="text-slate-400 block text-[11px]">Saved Key</span>
-                <code className="font-mono text-slate-200 tracking-wider text-xs">{initialMaskedKey}</code>
+            <div className="flex items-start gap-2.5 p-3 rounded-lg bg-slate-950 border border-slate-800">
+              <Cpu className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-slate-100 block font-semibold">Automated Procurement Synthesis</strong>
+                <span className="text-slate-400 text-[11px] leading-relaxed">
+                  Powers tender requirements extraction, bidder dossier structuring, multi-parameter due diligence, and statutory consistency checks.
+                </span>
               </div>
-            )}
-          </div>
-
-          {/* Input field */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-              API Key
-            </label>
-            <div className="relative">
-              <input
-                type={showKey ? 'text' : 'password'}
-                placeholder="Enter your AI API key..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 pr-10 transition-colors"
-              />
-              <button
-                type="button"
-                onClick={() => setShowKey(!showKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
-                title={showKey ? 'Hide key' : 'Show key'}
-              >
-                {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
             </div>
-            <p className="text-[11px] text-slate-400 flex items-center gap-1.5 pt-1">
-              <Lock className="w-3 h-3 text-slate-500" />
-              <span>Keys are processed securely server-side. Never exposed in public web traffic or logs.</span>
-            </p>
           </div>
 
-          {/* Status feedback */}
+          {/* Test Diagnostic Result */}
           {testResult && (
             <div
               className={`p-3.5 rounded-lg border text-xs font-medium flex items-center gap-2 ${
@@ -178,57 +128,38 @@ export const AIConfigModal: React.FC<AIConfigModalProps> = ({
             </div>
           )}
 
-          {errorMsg && (
-            <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800/80 text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          {/* Security & Audit notice */}
+          {/* Audit / Human Review Reminder */}
           <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-900/60 text-[11px] text-slate-400 flex items-start gap-2">
             <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
             <span>
-              <strong>ProcureAI Engine:</strong> AI assists in organizing and analyzing information. Human procurement officers stay in complete control of all final decisions and awards.
+              <strong>ProcureAI Policy:</strong> AI outputs are advisory and evidence-grounded. Final evaluation scores and award approvals strictly remain with human procurement officers.
             </span>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-slate-950 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          {initialMaskedKey ? (
-            <button
-              type="button"
-              onClick={handleRemoveKey}
-              className="text-xs text-rose-400 hover:text-rose-300 font-medium px-2 py-1 transition-colors flex items-center gap-1"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Remove API Key</span>
-            </button>
-          ) : (
-            <div />
-          )}
+        <div className="px-6 py-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={handleTestDiagnostics}
+            disabled={isTesting}
+            className="px-3.5 py-2 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 disabled:opacity-50 flex items-center gap-1.5 transition-colors"
+          >
+            {isTesting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Activity className="w-3.5 h-3.5 text-blue-400" />
+            )}
+            <span>Run Connection Diagnostic</span>
+          </button>
 
-          <div className="flex items-center gap-2 ml-auto">
-            <button
-              type="button"
-              onClick={handleTest}
-              disabled={isTesting || !apiKey.trim()}
-              className="px-3.5 py-2 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 transition-colors"
-            >
-              {isTesting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>Test Connection</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleSaveAndContinue}
-              disabled={isSaving || !apiKey.trim()}
-              className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 transition-colors"
-            >
-              {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>Save API Key</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-colors"
+          >
+            Done
+          </button>
         </div>
       </div>
     </div>

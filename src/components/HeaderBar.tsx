@@ -99,17 +99,17 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-0.5">
               Active Evaluation Tender
             </label>
-            {tenders.length > 0 && selectedTender ? (
+            {tenders.length > 0 && selectedTender?.id ? (
               <div className="flex items-center gap-2">
                 <select
                   value={selectedTender.id}
                   onChange={(e) => {
-                    const found = tenders.find((t) => t.id === e.target.value);
+                    const found = tenders.find((t) => t && t.id === e.target.value);
                     if (found) onSelectTender(found);
                   }}
                   className="text-xs font-semibold text-slate-900 bg-slate-50 border border-slate-300 rounded-md py-1.5 pl-2.5 pr-8 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:bg-white cursor-pointer"
                 >
-                  {tenders.map((t) => (
+                  {tenders.filter((t): t is Tender => Boolean(t && t.id)).map((t) => (
                     <option key={t.id} value={t.id}>
                       [{t.referenceNumber}] {t.title ? (t.title.length > 55 ? t.title.substring(0, 55) + '...' : t.title) : 'Untitled Tender'}
                     </option>

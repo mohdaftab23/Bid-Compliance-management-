@@ -42,9 +42,9 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
   const [withdrawalReason, setWithdrawalReason] = useState<string>('');
   const [deleteDraftModal, setDeleteDraftModal] = useState<Bidder | null>(null);
 
-  const bidderApplications = currentBidder
-    ? bidders.filter((b) => b.companyName === currentBidder.companyName || b.id === currentBidder.id)
-    : bidders;
+  const bidderApplications = (currentBidder
+    ? bidders.filter((b) => b && (b.companyName === currentBidder.companyName || (currentBidder.id && b.id === currentBidder.id)))
+    : bidders).filter((b): b is Bidder => Boolean(b && b.id));
 
   const getStatusBadge = (status?: BidderStatus) => {
     switch (status) {
@@ -96,7 +96,7 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
   };
 
   const handleConfirmDeleteDraft = () => {
-    if (deleteDraftModal && onDeleteDraft) {
+    if (deleteDraftModal?.id && onDeleteDraft) {
       onDeleteDraft(deleteDraftModal.id);
     }
     setDeleteDraftModal(null);
@@ -251,7 +251,7 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
                 </tr>
               ) : (
                 bidderApplications.map((b) => {
-                  const tenderMatch = tenders.find((t) => t.id === b.tenderId) || (tenders.length > 0 ? tenders[0] : null);
+                  const tenderMatch = tenders.find((t) => t && t.id === b.tenderId) || (tenders.length > 0 ? tenders[0] : null);
                   const status = b.status || 'SUBMITTED';
                   const isDraft = status === 'DRAFT';
                   const isSubmitted = status === 'SUBMITTED' || status === 'UNDER REVIEW';

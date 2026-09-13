@@ -92,12 +92,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    checkAIStatus().then(status => {
-      // If no key is set yet, show the setup prompt
-      if (!status.connected) {
-        setIsAIModalOpen(true);
-      }
-    });
+    checkAIStatus();
   }, []);
 
   const handleKeyConfigured = async () => {
@@ -118,7 +113,7 @@ export default function App() {
   // Run AI Due Diligence across all bidders for the active tender
   const handleRunDueDiligence = async () => {
     if (!selectedTender) return;
-    const tenderBidders = bidders.filter(b => b.tenderId === selectedTender.id);
+    const tenderBidders = bidders.filter(b => b && b.tenderId === selectedTender.id);
     if (tenderBidders.length === 0) return;
 
     // If not connected, invite user to connect first
@@ -132,6 +127,7 @@ export default function App() {
 
     for (let bIdx = 0; bIdx < tenderBidders.length; bIdx++) {
       const currentB = tenderBidders[bIdx];
+      if (!currentB) continue;
       setAnalysisProgress(prev => ({
         ...prev,
         currentBidderIndex: bIdx,
@@ -150,7 +146,9 @@ export default function App() {
         }
       );
 
-      updatedReports[currentB.id] = newReport;
+      if (currentB.id) {
+        updatedReports[currentB.id] = newReport;
+      }
     }
 
     setReports(updatedReports);
@@ -165,7 +163,7 @@ export default function App() {
       action: 'AI_ANALYSIS_EXECUTED',
       actor: 'Authorized Procurement Officer',
       actorRole: 'OFFICER',
-      details: `Full 8-stage AI due-diligence executed across ${tenderBidders.length} submissions using ${aiStatus.model}. Lead candidate: ${leadBidder?.companyName || 'N/A'} (${leadBidder && updatedReports[leadBidder.id] ? updatedReports[leadBidder.id].overallScore : 'N/A'}/100).`
+      details: `Full 8-stage AI due-diligence executed across ${tenderBidders.length} submissions using ${aiStatus.model}. Lead candidate: ${leadBidder?.companyName || 'N/A'} (${leadBidder && leadBidder.id && updatedReports[leadBidder.id] ? updatedReports[leadBidder.id].overallScore : 'N/A'}/100).`
     };
     setAuditLogs(prev => [auditEv, ...prev]);
 
@@ -207,13 +205,13 @@ export default function App() {
       actorRole: 'OFFICER',
       details: updatedReport.humanReview.scoreOverride
         ? `Score adjusted from ${updatedReport.humanReview.scoreOverride.originalScore} to ${updatedReport.humanReview.scoreOverride.adjustedScore}. Reason: ${updatedReport.humanReview.scoreOverride.officerJustification}`
-        : `Formal review signed off with status ${updatedReport.humanReview.officerStatus} for ${bidders.find(b => b.id === updatedReport.bidderId)?.companyName}.`
+        : `Formal review signed off with status ${updatedReport.humanReview.officerStatus} for ${bidders.find(b => b && b.id === updatedReport.bidderId)?.companyName || 'Unknown Vendor'}.`
     };
     setAuditLogs(prev => [auditEv, ...prev]);
   };
 
   const handleUpdateBidder = (updatedBidder: Bidder) => {
-    setBidders(prev => prev.map(b => b.id === updatedBidder.id ? updatedBidder : b));
+    setBidders(prev => prev.map(b => (b && updatedBidder && b.id === updatedBidder.id) ? updatedBidder : b));
     setSelectedBidder(updatedBidder);
 
     const auditEv: AuditEvent = {
@@ -224,19 +222,20 @@ export default function App() {
       action: 'BID_SUBMISSION_RECEIVED',
       actor: updatedBidder.contactPerson,
       actorRole: 'BIDDER',
-      details: `${updatedBidder.companyName} updated submission documents (${updatedBidder.documents.length} attachments on file).`
+      details: `${updatedBidder.companyName} updated submission documents (${updatedBidder.documents?.length || 0} attachments on file).`
     };
     setAuditLogs(prev => [auditEv, ...prev]);
   };
 
   const handleUpdateWeights = (newWeights: Tender['evaluationWeights']) => {
-    const updated = {
+    if (!selectedTender) return;
+    const updated: Tender = {
       ...selectedTender,
       evaluationWeights: newWeights,
       weightsSource: 'CUSTOM' as const
     };
     setSelectedTender(updated);
-    setTenders(prev => prev.map(t => t.id === updated.id ? updated : t));
+    setTenders(prev => prev.map(t => (t && t.id === updated.id) ? updated : t));
 
     const auditEv: AuditEvent = {
       id: `aud-${Date.now()}`,
@@ -253,7 +252,7 @@ export default function App() {
   const handleCancelTender = (tenderId: string, reason?: string) => {
     setTenders(prev =>
       prev.map(t =>
-        t.id === tenderId
+        t && t.id === tenderId
           ? {
               ...t,
               status: 'CANCELLED' as const,
@@ -264,7 +263,7 @@ export default function App() {
       )
     );
 
-    const targetTender = tenders.find(t => t.id === tenderId);
+    const targetTender = tenders.find(t => t && t.id === tenderId);
     const auditEv: AuditEvent = {
       id: `aud-${Date.now()}`,
       tenderId,
@@ -280,7 +279,7 @@ export default function App() {
   const handleCloseTender = (tenderId: string) => {
     setTenders(prev =>
       prev.map(t =>
-        t.id === tenderId
+        t && t.id === tenderId
           ? {
               ...t,
               status: 'CLOSED' as const,
@@ -289,7 +288,7 @@ export default function App() {
       )
     );
 
-    const targetTender = tenders.find(t => t.id === tenderId);
+    const targetTender = tenders.find(t => t && t.id === tenderId);
     const auditEv: AuditEvent = {
       id: `aud-${Date.now()}`,
       tenderId,
@@ -305,7 +304,7 @@ export default function App() {
   const handleArchiveTender = (tenderId: string) => {
     setTenders(prev =>
       prev.map(t =>
-        t.id === tenderId
+        t && t.id === tenderId
           ? {
               ...t,
               status: 'ARCHIVED' as const,
@@ -315,7 +314,7 @@ export default function App() {
       )
     );
 
-    const targetTender = tenders.find(t => t.id === tenderId);
+    const targetTender = tenders.find(t => t && t.id === tenderId);
     const auditEv: AuditEvent = {
       id: `aud-${Date.now()}`,
       tenderId,
@@ -329,8 +328,8 @@ export default function App() {
   };
 
   const handleDeleteDraftTender = (tenderId: string) => {
-    const targetTender = tenders.find(t => t.id === tenderId);
-    setTenders(prev => prev.filter(t => t.id !== tenderId));
+    const targetTender = tenders.find(t => t && t.id === tenderId);
+    setTenders(prev => prev.filter(t => t && t.id !== tenderId));
 
     const auditEv: AuditEvent = {
       id: `aud-${Date.now()}`,
@@ -345,7 +344,7 @@ export default function App() {
   };
 
   const handleDeleteBidderDraft = (bidderId: string) => {
-    setBidders(prev => prev.filter(b => b.id !== bidderId));
+    setBidders(prev => prev.filter(b => b && b.id !== bidderId));
   };
 
   const handleLogout = () => {
@@ -447,7 +446,7 @@ export default function App() {
               {currentView === 'tenders' && (
                 <TenderDetailsView
                   tender={selectedTender}
-                  bidders={selectedTender ? bidders.filter(b => b.tenderId === selectedTender.id) : []}
+                  bidders={selectedTender ? bidders.filter(b => b && b.tenderId === selectedTender.id) : []}
                   reports={reports}
                   onSelectBidder={(b) => {
                     setSelectedBidder(b);
@@ -464,7 +463,7 @@ export default function App() {
               {currentView === 'comparison' && (
                 <BidderComparisonView
                   tender={selectedTender}
-                  bidders={selectedTender ? bidders.filter(b => b.tenderId === selectedTender.id) : []}
+                  bidders={selectedTender ? bidders.filter(b => b && b.tenderId === selectedTender.id) : []}
                   reports={reports}
                   onSelectBidder={(b) => {
                     setSelectedBidder(b);
@@ -480,7 +479,7 @@ export default function App() {
                 <BidderReportView
                   tender={selectedTender}
                   bidder={selectedBidder}
-                  report={selectedBidder ? (reports[selectedBidder.id] || INITIAL_REPORTS['b-aquatech'] || Object.values(reports)[0] || null) : null}
+                  report={selectedBidder?.id ? (reports[selectedBidder.id] || INITIAL_REPORTS['b-aquatech'] || Object.values(reports)[0] || null) : null}
                   onUpdateReport={handleUpdateReport}
                   onBackToComparison={() => setCurrentView('comparison')}
                   onBackToDashboard={() => setCurrentView('dashboard')}
@@ -538,7 +537,7 @@ export default function App() {
               {(currentView === 'tender-browser' || currentView === 'find-tenders') && (
                 <TenderDetailsView
                   tender={selectedTender}
-                  bidders={selectedTender ? bidders.filter(b => b.tenderId === selectedTender.id) : []}
+                  bidders={selectedTender ? bidders.filter(b => b && b.tenderId === selectedTender.id) : []}
                   reports={reports}
                   onSelectBidder={() => {}}
                   onRunDueDiligence={() => {}}

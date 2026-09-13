@@ -745,7 +745,10 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  if (onDeleteDraft) onDeleteDraft(bidder.id);
+                  const targetId = bidder?.id || formData?.id;
+                  if (onDeleteDraft && targetId) {
+                    onDeleteDraft(targetId);
+                  }
                   setDeleteDraftModalOpen(false);
                 }}
                 className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs"

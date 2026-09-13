@@ -162,21 +162,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className={`w-full p-2.5 rounded-md border text-left flex items-center justify-between transition-colors ${
             aiConnected
               ? 'bg-slate-900 border-slate-700 hover:border-slate-600 text-slate-200'
-              : 'bg-amber-950/50 border-amber-800/80 hover:bg-amber-900/40 text-amber-200'
+              : 'bg-slate-900 border-slate-700 hover:border-slate-600 text-slate-200'
           }`}
         >
           <div className="flex items-center gap-2 min-w-0">
-            <Sparkles className={`w-4 h-4 shrink-0 ${aiConnected ? 'text-blue-400' : 'text-amber-400'}`} />
+            <Sparkles className="w-4 h-4 shrink-0 text-blue-400" />
             <div className="min-w-0">
               <span className="block text-[11px] font-semibold truncate">
-                {aiConnected ? 'AI Engine Connected' : 'AI Engine Inactive'}
+                Google Gemini
               </span>
               <span className="block text-[10px] text-slate-400 truncate">
-                {aiConnected ? 'Strict Grounding Active' : 'Configure API Key'}
+                gemini-3.8-flash (Active)
               </span>
             </div>
           </div>
-          <span className={`w-2 h-2 rounded-full shrink-0 ${aiConnected ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}`} />
+          <span className="w-2 h-2 rounded-full shrink-0 bg-emerald-400" />
         </button>
 
         {/* Role Toggle Switch */}

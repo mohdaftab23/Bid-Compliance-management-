@@ -105,10 +105,10 @@ app.get("/api/ai/status", (_req, res) => {
   const isConnected = Boolean(activeKey && activeKey.trim().length > 0);
   res.json({
     connected: isConnected,
-    provider: "AI Engine",
-    model: "AI Engine (High Precision)",
-    maskedKey: isConnected ? maskKey(activeKey) : null,
-    hasEnvKey: Boolean(process.env.AI_API_KEY || process.env.GEMINI_API_KEY),
+    provider: "Google Gemini",
+    model: "gemini-3.8-flash",
+    maskedKey: isConnected ? "AI Studio Environment (Active)" : null,
+    hasEnvKey: Boolean(process.env.GEMINI_API_KEY || process.env.AI_API_KEY),
   });
 });
 
@@ -119,7 +119,7 @@ app.post("/api/ai/test-key", async (req, res) => {
     if (!keyToTest || keyToTest.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        error: "No AI API key provided to test.",
+        error: "No Gemini API key found in server environment.",
       });
     }
 
@@ -133,7 +133,7 @@ app.post("/api/ai/test-key", async (req, res) => {
     });
 
     // Test with lightweight call
-    const { response } = await callAIWithRetry(ai, {
+    const { response, modelUsed } = await callAIWithRetry(ai, {
       model: "gemini-3.8-flash",
       contents: "Return only the word 'OK' to verify system connectivity.",
     });
@@ -141,14 +141,15 @@ app.post("/api/ai/test-key", async (req, res) => {
     const reply = response.text?.trim();
     return res.json({
       success: true,
-      message: "✓ AI connected successfully",
+      message: `✓ Google Gemini connected successfully (${modelUsed})`,
+      model: modelUsed,
       testResponse: reply || "OK",
     });
   } catch (error: any) {
     console.error("AI connection test error:", error?.message || error);
     return res.status(400).json({
       success: false,
-      error: error?.message || "Unable to connect to AI service. Please check your API key.",
+      error: error?.message || "Unable to connect to Google Gemini service.",
     });
   }
 });

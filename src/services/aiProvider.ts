@@ -63,8 +63,8 @@ export interface OrganizedBidderOutput {
 
 export interface AIProvider {
   getStatus(): Promise<AIStatus>;
-  testKey(apiKey: string): Promise<{ success: boolean; message?: string; error?: string }>;
-  setKey(apiKey: string): Promise<{ success: boolean; message?: string; error?: string; maskedKey?: string }>;
+  testKey(apiKey?: string): Promise<{ success: boolean; message?: string; error?: string }>;
+  setKey(apiKey?: string): Promise<{ success: boolean; message?: string; error?: string; maskedKey?: string }>;
   disconnectKey(): Promise<{ success: boolean; message?: string }>;
   extractRequirements(rawText: string): Promise<{
     success: boolean;

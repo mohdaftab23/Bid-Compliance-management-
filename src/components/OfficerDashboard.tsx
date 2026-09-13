@@ -111,7 +111,7 @@ export const OfficerDashboard: React.FC<OfficerDashboardProps> = ({
   };
 
   const handleConfirmCancel = () => {
-    if (cancelModalTender && onCancelTender) {
+    if (cancelModalTender?.id && onCancelTender) {
       onCancelTender(cancelModalTender.id, cancellationReason);
     }
     setCancelModalTender(null);
@@ -119,7 +119,7 @@ export const OfficerDashboard: React.FC<OfficerDashboardProps> = ({
   };
 
   const handleConfirmDeleteDraft = () => {
-    if (deleteDraftModalTender && onDeleteDraftTender) {
+    if (deleteDraftModalTender?.id && onDeleteDraftTender) {
       onDeleteDraftTender(deleteDraftModalTender.id);
     }
     setDeleteDraftModalTender(null);
@@ -282,13 +282,20 @@ export const OfficerDashboard: React.FC<OfficerDashboardProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {tenders.map((t) => {
-                const bidsCount = bidders.filter((b) => b.tenderId === t.id).length;
-                const isDraft = t.status === 'DRAFT';
-                const isOpen = t.status === 'OPEN FOR BIDS' || t.status === 'ACTIVE' || t.status === 'PUBLISHED';
-                const isClosed = t.status === 'CLOSED' || t.status === 'REVIEWED';
-                const isCancelled = t.status === 'CANCELLED';
-                const isArchived = t.status === 'ARCHIVED';
+              {tenders.filter((t): t is Tender => Boolean(t && t.id)).length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-8 text-center text-slate-500 text-xs">
+                    No tenders published yet. Click &quot;+ Create Tender&quot; above to publish your first public procurement notice.
+                  </td>
+                </tr>
+              ) : (
+                tenders.filter((t): t is Tender => Boolean(t && t.id)).map((t) => {
+                  const bidsCount = bidders.filter((b) => b && t && b.tenderId === t.id).length;
+                  const isDraft = t.status === 'DRAFT';
+                  const isOpen = t.status === 'OPEN FOR BIDS' || t.status === 'ACTIVE' || t.status === 'PUBLISHED';
+                  const isClosed = t.status === 'CLOSED' || t.status === 'REVIEWED';
+                  const isCancelled = t.status === 'CANCELLED';
+                  const isArchived = t.status === 'ARCHIVED';
 
                 return (
                   <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
@@ -410,7 +417,7 @@ export const OfficerDashboard: React.FC<OfficerDashboardProps> = ({
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
