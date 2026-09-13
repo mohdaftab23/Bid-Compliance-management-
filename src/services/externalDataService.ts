@@ -140,7 +140,7 @@ export const externalDataService = {
         })
       });
 
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.success && data.result) {
           return data.result;
