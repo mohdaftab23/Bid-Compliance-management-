@@ -22,7 +22,7 @@ import { formatINR, formatIndianDate } from '../utils/indianFormat';
 interface BidderDashboardProps {
   tenders: Tender[];
   bidders: Bidder[];
-  currentBidder: Bidder;
+  currentBidder?: Bidder | null;
   onNavigate: (view: string) => void;
   onSelectTender: (tender: Tender) => void;
   onUpdateBidder: (updated: Bidder) => void;
@@ -42,7 +42,9 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
   const [withdrawalReason, setWithdrawalReason] = useState<string>('');
   const [deleteDraftModal, setDeleteDraftModal] = useState<Bidder | null>(null);
 
-  const bidderApplications = bidders.filter((b) => b.companyName === currentBidder.companyName || b.id === currentBidder.id);
+  const bidderApplications = currentBidder
+    ? bidders.filter((b) => b.companyName === currentBidder.companyName || b.id === currentBidder.id)
+    : bidders;
 
   const getStatusBadge = (status?: BidderStatus) => {
     switch (status) {
@@ -115,7 +117,7 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
             Bidder Dashboard
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Registered Vendor: <strong>{currentBidder.companyName}</strong> (GSTIN: {currentBidder.gstin || '07AABCA1234F1Z5'})
+            Registered Vendor: <strong>{currentBidder?.companyName || 'Registered Enterprise'}</strong> (GSTIN: {currentBidder?.gstin || '07AABCA1234F1Z5'})
           </p>
         </div>
 
@@ -224,7 +226,7 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
           <div>
             <h2 className="text-sm font-bold text-slate-900">My Applications</h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              History of bids submitted by {currentBidder.companyName}.
+              History of bids submitted by {currentBidder?.companyName || 'your organization'}.
             </p>
           </div>
         </div>
@@ -241,23 +243,30 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {bidderApplications.map((b) => {
-                const tenderMatch = tenders.find((t) => t.id === b.tenderId) || tenders[0];
-                const status = b.status || 'SUBMITTED';
-                const isDraft = status === 'DRAFT';
-                const isSubmitted = status === 'SUBMITTED' || status === 'UNDER REVIEW';
-                const isWithdrawn = status === 'WITHDRAWN';
+              {bidderApplications.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500 text-xs">
+                    No applications submitted yet. Browse open tenders to prepare your first bid.
+                  </td>
+                </tr>
+              ) : (
+                bidderApplications.map((b) => {
+                  const tenderMatch = tenders.find((t) => t.id === b.tenderId) || (tenders.length > 0 ? tenders[0] : null);
+                  const status = b.status || 'SUBMITTED';
+                  const isDraft = status === 'DRAFT';
+                  const isSubmitted = status === 'SUBMITTED' || status === 'UNDER REVIEW';
+                  const isWithdrawn = status === 'WITHDRAWN';
 
-                return (
-                  <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
-                    {/* Tender Title */}
-                    <td className="px-4 py-3.5">
-                      <div className="font-bold text-slate-900 text-xs">
-                        {tenderMatch.title}
-                      </div>
-                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                        Notice #{tenderMatch.referenceNumber} • {tenderMatch.department}
-                      </div>
+                  return (
+                    <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
+                      {/* Tender Title */}
+                      <td className="px-4 py-3.5">
+                        <div className="font-bold text-slate-900 text-xs">
+                          {tenderMatch?.title || 'Public Tender Notice'}
+                        </div>
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                          Notice #{tenderMatch?.referenceNumber || b.tenderId} • {tenderMatch?.department || 'Procurement Authority'}
+                        </div>
                       {b.withdrawalReason && (
                         <div className="text-[10px] text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200 mt-1 inline-block">
                           Withdrawn: "{b.withdrawalReason}"
@@ -338,7 +347,7 @@ export const BidderDashboard: React.FC<BidderDashboardProps> = ({
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>

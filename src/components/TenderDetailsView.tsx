@@ -18,17 +18,28 @@ import {
   Info,
   Layers
 } from 'lucide-react';
-import { Tender, Bidder, DueDiligenceReport } from '../types';
+import { Tender, Bidder, DueDiligenceReport, EvaluationWeights } from '../types';
 
 interface TenderDetailsViewProps {
-  tender: Tender;
+  tender?: Tender | null;
   bidders: Bidder[];
   reports: Record<string, DueDiligenceReport>;
   onSelectBidder: (bidder: Bidder) => void;
   onRunDueDiligence: () => void;
   onOpenComparison: () => void;
   onUpdateWeights: (weights: Tender['evaluationWeights']) => void;
+  onCreateTender?: () => void;
+  onBackToDashboard?: () => void;
 }
+
+const DEFAULT_WEIGHTS: EvaluationWeights = {
+  eligibility: 20,
+  technical: 25,
+  pastPerformance: 20,
+  financial: 15,
+  proposalQuality: 10,
+  riskProfile: 10
+};
 
 export const TenderDetailsView: React.FC<TenderDetailsViewProps> = ({
   tender,
@@ -38,12 +49,53 @@ export const TenderDetailsView: React.FC<TenderDetailsViewProps> = ({
   onRunDueDiligence,
   onOpenComparison,
   onUpdateWeights,
+  onCreateTender,
+  onBackToDashboard,
 }) => {
   const [activeTab, setActiveTab] = useState<'bidders' | 'requirements' | 'weights' | 'documents'>('bidders');
-  const [weights, setWeights] = useState(tender.evaluationWeights);
+  const [weights, setWeights] = useState<EvaluationWeights>(tender?.evaluationWeights || DEFAULT_WEIGHTS);
   const [isSaved, setIsSaved] = useState(false);
 
-  const totalWeight = (Object.values(weights) as number[]).reduce((a, b) => a + b, 0);
+  React.useEffect(() => {
+    if (tender?.evaluationWeights) {
+      setWeights(tender.evaluationWeights);
+    }
+  }, [tender?.id, tender?.evaluationWeights]);
+
+  if (!tender) {
+    return (
+      <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-xs">
+        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-900 border border-blue-200 mx-auto flex items-center justify-center mb-4">
+          <FileText className="w-7 h-7 text-blue-800" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900">No Tender Selected</h2>
+        <p className="text-xs text-slate-500 max-w-md mx-auto mt-1.5 mb-6">
+          There is currently no tender selected or published. Choose an active tender or create a new procurement notice to view requirements, documents, and evaluation weights.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {onCreateTender && (
+            <button
+              onClick={onCreateTender}
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-900 hover:bg-blue-800 text-white transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Create Tender</span>
+            </button>
+          )}
+          {onBackToDashboard && (
+            <button
+              onClick={onBackToDashboard}
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition-colors shadow-2xs cursor-pointer"
+            >
+              Back to Dashboard
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const totalWeight = (Object.values(weights || DEFAULT_WEIGHTS) as number[]).reduce((a, b) => a + b, 0);
 
   const handleWeightChange = (key: keyof Tender['evaluationWeights'], value: number) => {
     setWeights(prev => ({

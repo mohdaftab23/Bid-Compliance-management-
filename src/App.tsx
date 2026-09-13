@@ -46,8 +46,21 @@ export default function App() {
     return currentUser?.role || 'OFFICER';
   });
 
-  const [selectedTender, setSelectedTender] = useState<Tender>(INITIAL_TENDERS[0]);
-  const [selectedBidder, setSelectedBidder] = useState<Bidder>(INITIAL_BIDDERS[0]);
+  const [selectedTender, setSelectedTender] = useState<Tender | null>(INITIAL_TENDERS[0] || null);
+  const [selectedBidder, setSelectedBidder] = useState<Bidder | null>(INITIAL_BIDDERS[0] || null);
+
+  // Synchronize selection if lists update
+  useEffect(() => {
+    if (!selectedTender && tenders.length > 0) {
+      setSelectedTender(tenders[0]);
+    }
+  }, [tenders, selectedTender]);
+
+  useEffect(() => {
+    if (!selectedBidder && bidders.length > 0) {
+      setSelectedBidder(bidders[0]);
+    }
+  }, [bidders, selectedBidder]);
 
   // AI Connection State
   const [aiStatus, setAiStatus] = useState<AIStatus>({
@@ -104,6 +117,10 @@ export default function App() {
 
   // Run AI Due Diligence across all bidders for the active tender
   const handleRunDueDiligence = async () => {
+    if (!selectedTender) return;
+    const tenderBidders = bidders.filter(b => b.tenderId === selectedTender.id);
+    if (tenderBidders.length === 0) return;
+
     // If not connected, invite user to connect first
     if (!aiStatus.connected) {
       setIsAIModalOpen(true);
@@ -113,8 +130,8 @@ export default function App() {
     setIsAnalysisOpen(true);
     const updatedReports: Record<string, DueDiligenceReport> = { ...reports };
 
-    for (let bIdx = 0; bIdx < bidders.length; bIdx++) {
-      const currentB = bidders[bIdx];
+    for (let bIdx = 0; bIdx < tenderBidders.length; bIdx++) {
+      const currentB = tenderBidders[bIdx];
       setAnalysisProgress(prev => ({
         ...prev,
         currentBidderIndex: bIdx,
@@ -140,6 +157,7 @@ export default function App() {
     setIsAnalysisOpen(false);
 
     // Record audit event
+    const leadBidder = tenderBidders[0];
     const auditEv: AuditEvent = {
       id: `aud-${Date.now()}`,
       tenderId: selectedTender.id,
@@ -147,7 +165,7 @@ export default function App() {
       action: 'AI_ANALYSIS_EXECUTED',
       actor: 'Authorized Procurement Officer',
       actorRole: 'OFFICER',
-      details: `Full 8-stage AI due-diligence executed across ${bidders.length} submissions using ${aiStatus.model}. Lead candidate: ${bidders[0].companyName} (${updatedReports[bidders[0].id]?.overallScore}/100).`
+      details: `Full 8-stage AI due-diligence executed across ${tenderBidders.length} submissions using ${aiStatus.model}. Lead candidate: ${leadBidder?.companyName || 'N/A'} (${leadBidder && updatedReports[leadBidder.id] ? updatedReports[leadBidder.id].overallScore : 'N/A'}/100).`
     };
     setAuditLogs(prev => [auditEv, ...prev]);
 
@@ -429,7 +447,7 @@ export default function App() {
               {currentView === 'tenders' && (
                 <TenderDetailsView
                   tender={selectedTender}
-                  bidders={bidders.filter(b => b.tenderId === selectedTender.id)}
+                  bidders={selectedTender ? bidders.filter(b => b.tenderId === selectedTender.id) : []}
                   reports={reports}
                   onSelectBidder={(b) => {
                     setSelectedBidder(b);
@@ -438,13 +456,15 @@ export default function App() {
                   onRunDueDiligence={handleRunDueDiligence}
                   onOpenComparison={() => setCurrentView('comparison')}
                   onUpdateWeights={handleUpdateWeights}
+                  onCreateTender={() => setIsCreateTenderOpen(true)}
+                  onBackToDashboard={() => setCurrentView('dashboard')}
                 />
               )}
 
               {currentView === 'comparison' && (
                 <BidderComparisonView
                   tender={selectedTender}
-                  bidders={bidders.filter(b => b.tenderId === selectedTender.id)}
+                  bidders={selectedTender ? bidders.filter(b => b.tenderId === selectedTender.id) : []}
                   reports={reports}
                   onSelectBidder={(b) => {
                     setSelectedBidder(b);
@@ -452,6 +472,7 @@ export default function App() {
                   }}
                   onRunDueDiligence={handleRunDueDiligence}
                   onBackToDashboard={() => setCurrentView('dashboard')}
+                  onOpenCreateTender={() => setIsCreateTenderOpen(true)}
                 />
               )}
 
@@ -459,7 +480,7 @@ export default function App() {
                 <BidderReportView
                   tender={selectedTender}
                   bidder={selectedBidder}
-                  report={reports[selectedBidder.id] || INITIAL_REPORTS['b-aquatech']}
+                  report={selectedBidder ? (reports[selectedBidder.id] || INITIAL_REPORTS['b-aquatech'] || Object.values(reports)[0] || null) : null}
                   onUpdateReport={handleUpdateReport}
                   onBackToComparison={() => setCurrentView('comparison')}
                   onBackToDashboard={() => setCurrentView('dashboard')}
@@ -517,12 +538,14 @@ export default function App() {
               {(currentView === 'tender-browser' || currentView === 'find-tenders') && (
                 <TenderDetailsView
                   tender={selectedTender}
-                  bidders={bidders.filter(b => b.tenderId === selectedTender.id)}
+                  bidders={selectedTender ? bidders.filter(b => b.tenderId === selectedTender.id) : []}
                   reports={reports}
                   onSelectBidder={() => {}}
                   onRunDueDiligence={() => {}}
                   onOpenComparison={() => {}}
                   onUpdateWeights={() => {}}
+                  onCreateTender={() => setIsCreateTenderOpen(true)}
+                  onBackToDashboard={() => setCurrentView('dashboard')}
                 />
               )}
 

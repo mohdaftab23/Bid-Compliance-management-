@@ -19,12 +19,13 @@ import {
 import { Tender, Bidder, DueDiligenceReport } from '../types';
 
 interface BidderComparisonViewProps {
-  tender: Tender;
+  tender?: Tender | null;
   bidders: Bidder[];
   reports: Record<string, DueDiligenceReport>;
   onSelectBidder: (bidder: Bidder) => void;
   onRunDueDiligence: () => void;
   onBackToDashboard: () => void;
+  onOpenCreateTender?: () => void;
 }
 
 export const BidderComparisonView: React.FC<BidderComparisonViewProps> = ({
@@ -34,7 +35,38 @@ export const BidderComparisonView: React.FC<BidderComparisonViewProps> = ({
   onSelectBidder,
   onRunDueDiligence,
   onBackToDashboard,
+  onOpenCreateTender,
 }) => {
+  if (!tender) {
+    return (
+      <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-xs">
+        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-900 border border-blue-200 mx-auto flex items-center justify-center mb-4">
+          <Shield className="w-7 h-7 text-blue-800" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900">No Tender Selected</h2>
+        <p className="text-xs text-slate-500 max-w-md mx-auto mt-1.5 mb-6">
+          To review and compare bidder submissions, please select an active tender or create a tender first.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {onOpenCreateTender && (
+            <button
+              onClick={onOpenCreateTender}
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-900 hover:bg-blue-800 text-white transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>+ Create Tender</span>
+            </button>
+          )}
+          <button
+            onClick={onBackToDashboard}
+            className="px-4 py-2 rounded-lg text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition-colors shadow-2xs cursor-pointer"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Sort bidders by evaluated score descending
   const sortedBidders = [...bidders].sort((a, b) => {
     const scoreA = reports[a.id]?.overallScore ?? 0;
@@ -44,6 +76,50 @@ export const BidderComparisonView: React.FC<BidderComparisonViewProps> = ({
 
   const topBidder = sortedBidders[0];
   const topReport = topBidder ? reports[topBidder.id] : null;
+
+  if (bidders.length === 0) {
+    return (
+      <div className="space-y-6">
+        {/* Top Header */}
+        <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-900 mb-1">
+              <Shield className="w-4 h-4 text-blue-900" />
+              <span>Tender Comparative Matrix &bull; {tender.referenceNumber}</span>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">{tender.title}</h1>
+            <p className="text-xs text-slate-600 mt-1 max-w-3xl">
+              Side-by-side comparative analysis of compliance, engineering capacity, track record, financial solvency, and risk profiles across all received bids.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onBackToDashboard}
+              className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition-colors shadow-xs cursor-pointer"
+            >
+              ← Dashboard
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-xs">
+          <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-600 border border-slate-200 mx-auto flex items-center justify-center mb-4">
+            <Building className="w-7 h-7 text-slate-600" />
+          </div>
+          <h2 className="text-base font-bold text-slate-900">No Bids Submitted Yet</h2>
+          <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-5">
+            No vendor applications have been received for tender {tender.referenceNumber} yet. Once vendors submit proposals, they will appear in this comparative matrix for automated compliance and due-diligence review.
+          </p>
+          <button
+            onClick={onBackToDashboard}
+            className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-900 hover:bg-blue-800 text-white transition-colors shadow-2xs cursor-pointer"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

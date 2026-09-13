@@ -30,9 +30,9 @@ import {
 import { Tender, Bidder, DueDiligenceReport, DataSourceType } from '../types';
 
 interface BidderReportViewProps {
-  tender: Tender;
-  bidder: Bidder;
-  report: DueDiligenceReport;
+  tender?: Tender | null;
+  bidder?: Bidder | null;
+  report?: DueDiligenceReport | null;
   onUpdateReport: (updatedReport: DueDiligenceReport) => void;
   onBackToComparison: () => void;
   onBackToDashboard: () => void;
@@ -47,13 +47,35 @@ export const BidderReportView: React.FC<BidderReportViewProps> = ({
   onBackToDashboard,
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'eligibility' | 'technical' | 'past' | 'financial' | 'risks' | 'evidence' | 'explainability' | 'review'>('all');
-  const [officerNotes, setOfficerNotes] = useState(report.humanReview.officerNotes || '');
+  const [officerNotes, setOfficerNotes] = useState(report?.humanReview?.officerNotes || '');
   const [newAnnotation, setNewAnnotation] = useState({ targetSection: 'Eligibility & Compliance', comment: '' });
   const [scoreOverride, setScoreOverride] = useState<number | null>(null);
   const [overrideReason, setOverrideReason] = useState('');
   const [showOverrideInput, setShowOverrideInput] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [evidenceFilter, setEvidenceFilter] = useState<'ALL' | 'BIDDER_PROVIDED' | 'EXTERNAL_SOURCE' | 'AI_INFERENCE'>('ALL');
+
+  if (!tender || !bidder || !report) {
+    return (
+      <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-xs">
+        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-900 border border-blue-200 mx-auto flex items-center justify-center mb-4">
+          <FileText className="w-7 h-7 text-blue-800" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900">No Dossier Available</h2>
+        <p className="text-xs text-slate-500 max-w-md mx-auto mt-1.5 mb-6">
+          Please select a vendor submission from the evaluation matrix or run AI due diligence to inspect the comprehensive report.
+        </p>
+        <div className="flex justify-center gap-3">
+          <button
+            onClick={onBackToDashboard}
+            className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-900 hover:bg-blue-800 text-white transition-colors shadow-2xs cursor-pointer"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleSaveOfficerReview = (status: 'REVIEWED_CONFIRMED' | 'FLAGGED_FOR_AUDIT' | 'REJECTED_NON_COMPLIANT') => {
     const updated: DueDiligenceReport = {
