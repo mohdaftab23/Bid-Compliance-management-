@@ -240,25 +240,25 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Top Welcome / Status Card */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs transition-colors">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-900 border border-blue-200">
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                 Vendor Portal &bull; Application Workspace
               </span>
-              <span className="text-xs text-slate-500 font-mono">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                 Target Tender: [{tender?.referenceNumber || 'GOV-TND-2026'}]
               </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
                 Status: {currentStatus}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               {formData.companyName}
             </h1>
-            <p className="text-xs text-slate-600 mt-1">
-              Bidding for: <strong>{tender?.title}</strong> (Department: {tender?.department})
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              Bidding for: <strong className="text-slate-900 dark:text-slate-200">{tender?.title}</strong> (Department: {tender?.department})
             </p>
           </div>
 
@@ -269,23 +269,23 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
                 <button
                   type="button"
                   onClick={handleSaveDraft}
-                  className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition-colors shadow-2xs inline-flex items-center gap-1.5"
+                  className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Save className="w-3.5 h-3.5 text-slate-500" />
+                  <Save className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   <span>Save Draft</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setDeleteDraftModalOpen(true)}
-                  className="px-3 py-2 rounded-lg text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors inline-flex items-center gap-1.5"
+                  className="px-3 py-2 rounded-lg text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                   <span>Delete Draft</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleSubmitFinal}
-                  className="px-4 py-2 rounded-lg text-xs font-bold bg-blue-900 hover:bg-blue-800 text-white shadow-xs transition-colors inline-flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-lg text-xs font-bold bg-blue-900 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-600 text-white shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5 text-blue-200" />
                   <span>Submit Final Bid</span>
@@ -297,9 +297,9 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWithdrawModalOpen(true)}
-                className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors inline-flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
               >
-                <AlertOctagon className="w-3.5 h-3.5 text-rose-600" />
+                <AlertOctagon className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                 <span>Withdraw Bid</span>
               </button>
             )}
@@ -308,19 +308,19 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
 
         {/* Notices */}
         {submitNotice && (
-          <div className="mt-3 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="mt-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>{submitNotice}</span>
           </div>
         )}
 
         {isWithdrawn && (
-          <div className="mt-3 p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
+          <div className="mt-3 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-xs text-rose-900 dark:text-rose-200 space-y-1">
             <div className="font-bold flex items-center gap-1.5">
-              <AlertOctagon className="w-4 h-4 text-rose-600" />
+              <AlertOctagon className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               <span>Bid Withdrawn</span>
             </div>
-            <p className="text-rose-800">
+            <p className="text-rose-800 dark:text-rose-300">
               This submission was formally withdrawn on {formatIndianDate(formData.withdrawnAt || new Date().toISOString())}.
               {formData.withdrawalReason && ` Reason: "${formData.withdrawalReason}"`}
             </p>
@@ -328,9 +328,9 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
         )}
 
         {isSubmitted && (
-          <div className="mt-3 p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-950 flex items-center justify-between gap-3">
+          <div className="mt-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-xs text-blue-950 dark:text-blue-200 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-blue-700 dark:text-blue-400 shrink-0" />
               <span>
                 <strong>Application Locked for Evaluation:</strong> Your bid is under official review. Arbitrary modifications are locked to preserve procurement integrity.
               </span>
@@ -338,7 +338,7 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
             <button
               type="button"
               onClick={() => setWithdrawModalOpen(true)}
-              className="text-[11px] font-bold text-rose-700 hover:text-rose-900 underline shrink-0"
+              className="text-[11px] font-bold text-rose-700 dark:text-rose-400 hover:text-rose-900 dark:hover:text-rose-300 underline shrink-0 cursor-pointer"
             >
               Withdraw if needed
             </button>
@@ -346,14 +346,14 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-200 mt-4 text-xs font-semibold">
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 mt-4 text-xs font-semibold">
           <button
             type="button"
             onClick={() => setActiveTab('structured_profile')}
-            className={`pb-2.5 px-3 border-b-2 transition-colors inline-flex items-center gap-1.5 ${
+            className={`pb-2.5 px-3 border-b-2 transition-colors inline-flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'structured_profile'
-                ? 'border-blue-900 text-blue-900 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-900 dark:border-blue-400 text-blue-900 dark:text-blue-400 font-bold'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Building className="w-4 h-4" />
@@ -363,23 +363,23 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('raw_input')}
-            className={`pb-2.5 px-3 border-b-2 transition-colors inline-flex items-center gap-1.5 ${
+            className={`pb-2.5 px-3 border-b-2 transition-colors inline-flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'raw_input'
-                ? 'border-blue-900 text-blue-900 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-900 dark:border-blue-400 text-blue-900 dark:text-blue-400 font-bold'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-blue-600" />
+            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>Tell Us About Your Company & Proposal</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('documents')}
-            className={`pb-2.5 px-3 border-b-2 transition-colors inline-flex items-center gap-1.5 ${
+            className={`pb-2.5 px-3 border-b-2 transition-colors inline-flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'documents'
-                ? 'border-blue-900 text-blue-900 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-900 dark:border-blue-400 text-blue-900 dark:text-blue-400 font-bold'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <UploadCloud className="w-4 h-4" />
@@ -392,13 +392,13 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
       {/* TAB 1: RAW INPUT MODE (REQUIREMENT 14: BIDDER RAW INPUT)                  */}
       {/* ========================================================================= */}
       {activeTab === 'raw_input' && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4 animate-in fade-in">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-4 animate-in fade-in transition-colors">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                 Tell us about your company and proposal
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Speak into your microphone, paste your pitch, or upload certificates. ProcureAI converts this into a structured bid profile.
               </p>
             </div>
@@ -407,13 +407,13 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
               <button
                 type="button"
                 onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors inline-flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors inline-flex items-center gap-1.5 cursor-pointer ${
                   showVoiceRecorder
-                    ? 'bg-blue-900 text-white border-blue-900'
-                    : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300'
+                    ? 'bg-blue-900 dark:bg-blue-700 text-white border-blue-900 dark:border-blue-700'
+                    : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700'
                 }`}
               >
-                <Mic className="w-3.5 h-3.5 text-blue-600" />
+                <Mic className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 <span>{showVoiceRecorder ? 'Hide Microphone' : '🎤 Speak'}</span>
               </button>
 
@@ -421,7 +421,7 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
                 type="button"
                 onClick={handleStructureWithAI}
                 disabled={isStructuring || !rawText.trim()}
-                className="px-4 py-1.5 rounded-lg bg-blue-900 hover:bg-blue-800 disabled:opacity-50 text-white text-xs font-bold shadow-xs inline-flex items-center gap-1.5 transition-colors"
+                className="px-4 py-1.5 rounded-lg bg-blue-900 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-600 disabled:opacity-50 text-white text-xs font-bold shadow-xs inline-flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5 text-blue-200" />
                 <span>{isStructuring ? 'Structuring with AI...' : 'Convert to Structured Profile'}</span>
@@ -444,19 +444,19 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-slate-700">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Describe your capabilities and proposal:
               </label>
               <button
                 type="button"
                 onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md border transition-colors inline-flex items-center gap-1.5 shadow-2xs ${
+                className={`px-2.5 py-1 text-xs font-semibold rounded-md border transition-colors inline-flex items-center gap-1.5 shadow-2xs cursor-pointer ${
                   showVoiceRecorder
-                    ? 'bg-blue-900 text-white border-blue-900'
-                    : 'bg-blue-50 text-blue-900 hover:bg-blue-100 border-blue-200'
+                    ? 'bg-blue-900 dark:bg-blue-700 text-white border-blue-900 dark:border-blue-700'
+                    : 'bg-blue-50 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 border-blue-200 dark:border-blue-800'
                 }`}
               >
-                <Mic className="w-3.5 h-3.5 text-blue-600" />
+                <Mic className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 <span>{showVoiceRecorder ? 'Hide Microphone' : '🎤 Speak Requirements'}</span>
               </button>
             </div>
@@ -466,7 +466,7 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
               placeholder="Describe your capabilities, incorporation, GSTIN/PAN, past municipal contracts, equipment inventory, and pricing..."
-              className="w-full p-3 text-xs leading-relaxed border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white font-sans text-slate-800"
+              className="w-full p-3 text-xs leading-relaxed border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 font-sans text-slate-800 dark:text-slate-100"
             />
           </div>
 
@@ -488,9 +488,9 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
       {activeTab === 'structured_profile' && (
         <div className="space-y-5 animate-in fade-in">
           {/* Review Banner */}
-          <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-950 flex items-center justify-between gap-3">
+          <div className="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-xs text-blue-950 dark:text-blue-200 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-700 shrink-0" />
+              <Sparkles className="w-4 h-4 text-blue-700 dark:text-blue-400 shrink-0" />
               <span>
                 <strong>Here is your structured profile.</strong> Review and confirm all details before submitting.
               </span>
@@ -499,7 +499,7 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
               <button
                 type="button"
                 onClick={handleSubmitFinal}
-                className="px-3.5 py-1.5 rounded-lg bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1"
+                className="px-3.5 py-1.5 rounded-lg bg-blue-900 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-600 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
               >
                 <span>Confirm & Submit</span>
               </button>
@@ -507,93 +507,93 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
           </div>
 
           {/* Company Details & Tax Identifiers */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
-              <Building className="w-4 h-4 text-blue-900" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-4 transition-colors">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+              <Building className="w-4 h-4 text-blue-900 dark:text-blue-400" />
               <span>Company Information & Indian Statutory Identifiers</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">Company Legal Name</span>
-                <span className="text-slate-900 font-bold">{formData.companyName}</span>
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">Company Legal Name</span>
+                <span className="text-slate-900 dark:text-slate-100 font-bold">{formData.companyName}</span>
               </div>
 
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">GSTIN Registration</span>
-                <span className="text-blue-900 font-mono font-bold">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">GSTIN Registration</span>
+                <span className="text-blue-900 dark:text-blue-400 font-mono font-bold">
                   {formData.gstin || formData.registrationNumber || '07AABCA1234F1Z5'}
                 </span>
               </div>
 
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">Permanent Account Number (PAN)</span>
-                <span className="text-slate-900 font-mono font-bold">{formData.pan || 'AABCA1234F'}</span>
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">Permanent Account Number (PAN)</span>
+                <span className="text-slate-900 dark:text-slate-100 font-mono font-bold">{formData.pan || 'AABCA1234F'}</span>
               </div>
 
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">Udyam / MSME Registration</span>
-                <span className="text-slate-900 font-mono font-semibold">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">Udyam / MSME Registration</span>
+                <span className="text-slate-900 dark:text-slate-100 font-mono font-semibold">
                   {formData.udyamNumber || 'UDYAM-DL-01-0024567'}
                 </span>
               </div>
 
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">Year Established</span>
-                <span className="text-slate-900 font-semibold">{formData.yearEstablished} (6+ Years Experience)</span>
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">Year Established</span>
+                <span className="text-slate-900 dark:text-slate-100 font-semibold">{formData.yearEstablished} (6+ Years Experience)</span>
               </div>
 
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">Registered Office</span>
-                <span className="text-slate-900">{formData.address || 'Okhla Industrial Area, New Delhi, 110020'}</span>
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">Registered Office</span>
+                <span className="text-slate-900 dark:text-slate-200">{formData.address || 'Okhla Industrial Area, New Delhi, 110020'}</span>
               </div>
 
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">Authorized Contact</span>
-                <span className="text-slate-900">{formData.contactPerson} ({formData.phone})</span>
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">Authorized Contact</span>
+                <span className="text-slate-900 dark:text-slate-200">{formData.contactPerson} ({formData.phone})</span>
               </div>
 
               <div>
-                <span className="text-[11px] font-bold text-slate-500 block">Total Workforce</span>
-                <span className="text-slate-900 font-semibold">{formData.employeeCount} full-time personnel</span>
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">Total Workforce</span>
+                <span className="text-slate-900 dark:text-slate-100 font-semibold">{formData.employeeCount} full-time personnel</span>
               </div>
             </div>
           </div>
 
           {/* Fleet & Equipment Inventory */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-emerald-700" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-3 transition-colors">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+              <Layers className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
               <span>Fleet & Equipment Summary</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               {formData.infrastructureEquipment.map((eq, i) => (
-                <div key={i} className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="text-slate-800 font-medium">{eq}</span>
+                <div key={i} className="p-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="text-slate-800 dark:text-slate-200 font-medium">{eq}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Past Municipal Projects */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-blue-900" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-3 transition-colors">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-blue-900 dark:text-blue-400" />
               <span>Past Municipal Project Experience</span>
             </h3>
 
             <div className="space-y-2">
               {formData.pastProjects.map((p, i) => (
-                <div key={i} className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div key={i} className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                   <div>
-                    <span className="font-bold text-slate-900">{p.client} — {p.scope}</span>
-                    <div className="text-[11px] text-slate-500 mt-0.5">
+                    <span className="font-bold text-slate-900 dark:text-slate-100">{p.client} — {p.scope}</span>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                       Completed: {p.completionYear} • Rating: {p.performanceRating}
                     </div>
                   </div>
-                  <span className="font-bold text-blue-900 font-mono self-start sm:self-center">
+                  <span className="font-bold text-blue-900 dark:text-blue-300 font-mono self-start sm:self-center">
                     {formatINR(p.contractValue)}
                   </span>
                 </div>
@@ -602,15 +602,15 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
           </div>
 
           {/* Commercial Pricing Proposal */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
-              <IndianRupee className="w-4 h-4 text-emerald-700" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-3 transition-colors">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+              <IndianRupee className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
               <span>Commercial Bid Price (INR ₹)</span>
             </h3>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Total Lump-Sum Bid Amount (Inclusive of all Taxes & Royalties)
                 </label>
                 <div className="relative max-w-xs">
@@ -620,15 +620,15 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
                     disabled={isSubmitted || isWithdrawn}
                     value={pricingINR}
                     onChange={(e) => setPricingINR(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="w-full pl-7 pr-3 py-2 text-sm font-bold text-blue-950 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white"
+                    className="w-full pl-7 pr-3 py-2 text-sm font-bold text-blue-950 dark:text-blue-300 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800"
                   />
                 </div>
-                <span className="text-[11px] text-slate-500 mt-1 block">
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">
                   Formatted: {formatINR(pricingINR, true)} ({formatINR(pricingINR)})
                 </span>
               </div>
 
-              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs space-y-1 text-emerald-950">
+              <div className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 p-3 rounded-xl text-xs space-y-1 text-emerald-950 dark:text-emerald-200">
                 <div className="font-bold">Competitive Price Analysis:</div>
                 <div>Tender Budget: {formatINR(tender?.budget || 18500000)}</div>
                 <div>Your Quote: {formatINR(pricingINR)} (3.8% below tender estimate)</div>
@@ -642,13 +642,13 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
       {/* TAB 3: DOCUMENTS                                                          */}
       {/* ========================================================================= */}
       {activeTab === 'documents' && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4 animate-in fade-in">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs space-y-4 animate-in fade-in transition-colors">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                 Official Bid Package Files & Attachments
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 These documents are submitted for statutory compliance checks and AI due-diligence validation.
               </p>
             </div>
@@ -667,24 +667,24 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
 
       {/* WITHDRAW BID CONFIRMATION MODAL */}
       {withdrawModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-md w-full p-5 border border-slate-200 dark:border-slate-800 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-400 flex items-center justify-center shrink-0">
                 <AlertOctagon className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Withdraw this bid?</h3>
-                <p className="text-xs text-slate-500">Notice #{tender?.referenceNumber}</p>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Withdraw this bid?</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Notice #{tender?.referenceNumber}</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               After withdrawal, your bid will no longer be considered in this tender, subject to the applicable tender rules and EMD provisions.
             </p>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Optional reason for withdrawal:
               </label>
               <textarea
@@ -692,7 +692,7 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
                 value={withdrawalReason}
                 onChange={(e) => setWithdrawalReason(e.target.value)}
                 placeholder="e.g. Schedule conflicts or fleet reallocation..."
-                className="w-full p-2.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-900"
+                className="w-full p-2.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-900 dark:focus:ring-blue-500 text-slate-900 dark:text-slate-100"
               />
             </div>
 
@@ -700,14 +700,14 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWithdrawModalOpen(false)}
-                className="px-3.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50"
+                className="px-3.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
               >
                 Keep Submission
               </button>
               <button
                 type="button"
                 onClick={handleConfirmWithdraw}
-                className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs"
+                className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs cursor-pointer"
               >
                 Withdraw Bid
               </button>
@@ -718,19 +718,19 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
 
       {/* DELETE DRAFT MODAL */}
       {deleteDraftModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-md w-full p-5 border border-slate-200 dark:border-slate-800 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-400 flex items-center justify-center shrink-0">
                 <Trash2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Delete this draft proposal?</h3>
-                <p className="text-xs text-slate-500">Unsubmitted application</p>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Delete this draft proposal?</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Unsubmitted application</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               This will permanently delete your unsubmitted proposal draft and discard any local input notes.
             </p>
 
@@ -738,7 +738,7 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
               <button
                 type="button"
                 onClick={() => setDeleteDraftModalOpen(false)}
-                className="px-3.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50"
+                className="px-3.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
               >
                 Keep Draft
               </button>
@@ -751,7 +751,7 @@ export const BidderSubmissionView: React.FC<BidderSubmissionViewProps> = ({
                   }
                   setDeleteDraftModalOpen(false);
                 }}
-                className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs"
+                className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs cursor-pointer"
               >
                 Delete Draft
               </button>

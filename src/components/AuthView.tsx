@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, Mail, Lock, User, Building, CheckCircle2, ArrowRight, RefreshCw, KeyRound, AlertCircle } from 'lucide-react';
 import { User as UserType, UserRole } from '../types';
+import { ThemeToggle } from './ThemeToggle';
 
 interface AuthViewProps {
   onLoginSuccess?: (user: UserType) => void;
@@ -199,34 +200,39 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-slate-800">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-slate-800 dark:text-slate-100 transition-colors relative">
+      {/* Top right theme toggle */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
+
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-900 text-white shadow-sm mb-4">
           <Shield className="w-8 h-8 text-blue-300" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Procure<span className="text-blue-700">AI</span>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          Procure<span className="text-blue-700 dark:text-blue-400">AI</span>
         </h1>
-        <p className="mt-1 text-sm text-slate-600 font-medium">
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 font-medium">
           Government Tender & Due-Diligence Evaluation Platform
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 sm:px-10 shadow-sm border border-slate-200 rounded-xl">
+        <div className="bg-white dark:bg-slate-900 py-8 px-6 sm:px-10 shadow-sm border border-slate-200 dark:border-slate-800 rounded-xl transition-colors">
           {/* LOGIN VIEW */}
           {mode === 'LOGIN' && (
             <div>
               <div className="mb-6">
-                <h2 className="text-xl font-bold text-slate-900">Sign in to your account</h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Sign in to your account</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Access the official government procurement portal
                 </p>
               </div>
 
               {loginError && (
-                <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+                <div className="mb-4 p-3 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                   <span>{loginError}</span>
                 </div>
@@ -234,7 +240,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Official Email
                   </label>
                   <div className="relative">
@@ -247,20 +253,20 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       placeholder="officer@department.gov"
-                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent bg-white text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-700">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                       Password
                     </label>
                     <button
                       type="button"
                       onClick={() => setMode('FORGOT_PASSWORD')}
-                      className="text-xs text-blue-700 hover:text-blue-900 font-medium"
+                      className="text-xs text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium"
                     >
                       Forgot Password?
                     </button>
@@ -275,53 +281,53 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent bg-white text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 hover:bg-blue-800 transition-colors shadow-xs"
+                  className="w-full py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-600 transition-colors shadow-xs"
                 >
                   Sign In
                 </button>
               </form>
 
-              <div className="mt-6 pt-5 border-t border-slate-200">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 text-center">
+              <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800">
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 text-center">
                   Or Instant Demo Access
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => handleQuickDemoLogin('OFFICER')}
-                    className="p-2.5 rounded-md border border-slate-300 hover:border-blue-700 hover:bg-blue-50/50 text-left transition-colors group"
+                    className="p-2.5 rounded-md border border-slate-300 dark:border-slate-700 hover:border-blue-700 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-slate-800/80 text-left transition-colors group"
                   >
-                    <div className="text-xs font-bold text-slate-900 group-hover:text-blue-900">
+                    <div className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-900 dark:group-hover:text-blue-400">
                       Procurement Officer
                     </div>
-                    <div className="text-[11px] text-slate-500">James Davis</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">James Davis</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleQuickDemoLogin('BIDDER')}
-                    className="p-2.5 rounded-md border border-slate-300 hover:border-blue-700 hover:bg-blue-50/50 text-left transition-colors group"
+                    className="p-2.5 rounded-md border border-slate-300 dark:border-slate-700 hover:border-blue-700 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-slate-800/80 text-left transition-colors group"
                   >
-                    <div className="text-xs font-bold text-slate-900 group-hover:text-blue-900">
+                    <div className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-900 dark:group-hover:text-blue-400">
                       Bidder / Company
                     </div>
-                    <div className="text-[11px] text-slate-500">Elena Vance</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Elena Vance</div>
                   </button>
                 </div>
               </div>
 
-              <div className="mt-6 text-center text-xs text-slate-600">
+              <div className="mt-6 text-center text-xs text-slate-600 dark:text-slate-400">
                 Don't have an account?{' '}
                 <button
                   type="button"
                   onClick={() => setMode('SIGNUP')}
-                  className="font-bold text-blue-700 hover:text-blue-900"
+                  className="font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
                 >
                   Create Account
                 </button>
@@ -333,14 +339,14 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
           {mode === 'SIGNUP' && (
             <div>
               <div className="mb-6">
-                <h2 className="text-xl font-bold text-slate-900">Create your account</h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Create your account</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Register as a Procurement Officer or Commercial Bidder
                 </p>
               </div>
 
               {signupError && (
-                <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+                <div className="mb-4 p-3 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                   <span>{signupError}</span>
                 </div>
@@ -348,7 +354,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
 
               <form onSubmit={handleSignUp} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Select Your Role
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -357,8 +363,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       onClick={() => setRole('OFFICER')}
                       className={`py-2 px-3 rounded-md text-xs font-semibold border transition-all text-center ${
                         role === 'OFFICER'
-                          ? 'bg-blue-900 text-white border-blue-900 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                          ? 'bg-blue-900 dark:bg-blue-700 text-white border-blue-900 dark:border-blue-600 shadow-xs'
+                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
                       }`}
                     >
                       Procurement Officer
@@ -368,8 +374,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       onClick={() => setRole('BIDDER')}
                       className={`py-2 px-3 rounded-md text-xs font-semibold border transition-all text-center ${
                         role === 'BIDDER'
-                          ? 'bg-blue-900 text-white border-blue-900 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                          ? 'bg-blue-900 dark:bg-blue-700 text-white border-blue-900 dark:border-blue-600 shadow-xs'
+                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
                       }`}
                     >
                       Bidder / Company
@@ -378,7 +384,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Full Name
                   </label>
                   <div className="relative">
@@ -391,13 +397,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="e.g. Sarah Jenkins"
-                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Organization / Department Name
                   </label>
                   <div className="relative">
@@ -410,13 +416,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={organizationName}
                       onChange={(e) => setOrganizationName(e.target.value)}
                       placeholder={role === 'OFFICER' ? 'Department of Transport' : 'Infrastructure Corp Ltd'}
-                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Official Email
                   </label>
                   <div className="relative">
@@ -429,14 +435,14 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={signupEmail}
                       onChange={(e) => setSignupEmail(e.target.value)}
                       placeholder="name@organization.gov"
-                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Password
                     </label>
                     <input
@@ -445,11 +451,11 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
                       placeholder="Min 6 chars"
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white text-slate-900"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Confirm Password
                     </label>
                     <input
@@ -458,25 +464,25 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-enter password"
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white text-slate-900"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full mt-2 py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 hover:bg-blue-800 transition-colors shadow-xs"
+                  className="w-full mt-2 py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-600 transition-colors shadow-xs"
                 >
                   Create Account
                 </button>
               </form>
 
-              <div className="mt-6 text-center text-xs text-slate-600">
+              <div className="mt-6 text-center text-xs text-slate-600 dark:text-slate-400">
                 Already have an account?{' '}
                 <button
                   type="button"
                   onClick={() => setMode('LOGIN')}
-                  className="font-bold text-blue-700 hover:text-blue-900"
+                  className="font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
                 >
                   Sign In
                 </button>
@@ -487,26 +493,26 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
           {/* EMAIL VERIFICATION SCREEN */}
           {mode === 'VERIFY_EMAIL' && pendingUser && (
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-blue-800 mb-4">
+              <div className="w-12 h-12 mx-auto rounded-full bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center text-blue-800 dark:text-blue-300 mb-4">
                 <Mail className="w-6 h-6" />
               </div>
 
-              <h2 className="text-xl font-bold text-slate-900">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                 Check your email to verify your account
               </h2>
-              <p className="text-xs text-slate-600 mt-2">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-2">
                 We've dispatched an official verification confirmation link to:
               </p>
-              <div className="my-3 px-3 py-2 bg-slate-100 rounded-md font-mono text-xs text-slate-800 font-semibold inline-block">
+              <div className="my-3 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-xs text-slate-800 dark:text-slate-200 font-semibold inline-block border border-slate-200 dark:border-slate-700">
                 {pendingUser.email}
               </div>
 
-              <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
                 Click the verification button in your email, or enter the 6-digit verification code below to activate your account.
               </p>
 
               {resendStatus && (
-                <div className="mb-4 p-2.5 rounded bg-emerald-50 border border-emerald-200 text-xs text-emerald-700">
+                <div className="mb-4 p-2.5 rounded bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-700 dark:text-emerald-300">
                   {resendStatus}
                 </div>
               )}
@@ -519,24 +525,24 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                     placeholder="Enter 6-digit code (e.g. 749201)"
-                    className="w-full text-center text-base tracking-widest font-mono py-2.5 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white"
+                    className="w-full text-center text-base tracking-widest font-mono py-2.5 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 hover:bg-blue-800 transition-colors shadow-xs flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-600 transition-colors shadow-xs flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                   <span>Verify & Proceed to Dashboard</span>
                 </button>
               </form>
 
-              <div className="mt-5 flex items-center justify-between text-xs pt-4 border-t border-slate-200">
+              <div className="mt-5 flex items-center justify-between text-xs pt-4 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={handleResendVerification}
-                  className="text-blue-700 hover:text-blue-900 font-medium inline-flex items-center gap-1"
+                  className="text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium inline-flex items-center gap-1"
                 >
                   <RefreshCw className="w-3 h-3" />
                   <span>Resend verification email</span>
@@ -544,7 +550,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                 <button
                   type="button"
                   onClick={() => setMode('LOGIN')}
-                  className="text-slate-500 hover:text-slate-800"
+                  className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 >
                   Back to Sign In
                 </button>
@@ -556,19 +562,19 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
           {mode === 'FORGOT_PASSWORD' && (
             <div>
               <div className="mb-6">
-                <h2 className="text-xl font-bold text-slate-900">Reset your password</h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Reset your password</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Enter your registered official email to receive password recovery instructions.
                 </p>
               </div>
 
               {forgotSuccess ? (
                 <div className="text-center py-4 space-y-4">
-                  <div className="w-10 h-10 mx-auto rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                  <div className="w-10 h-10 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-700 dark:text-emerald-300">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    A password reset link has been dispatched to <strong>{forgotEmail}</strong>. Please check your inbox.
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                    A password reset link has been dispatched to <strong className="text-slate-900 dark:text-slate-100">{forgotEmail}</strong>. Please check your inbox.
                   </p>
                   <button
                     type="button"
@@ -576,7 +582,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       setForgotSuccess(false);
                       setMode('LOGIN');
                     }}
-                    className="w-full py-2 rounded-md text-xs font-semibold text-blue-900 bg-blue-50 border border-blue-200 hover:bg-blue-100"
+                    className="w-full py-2 rounded-md text-xs font-semibold text-blue-900 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50"
                   >
                     Return to Sign In
                   </button>
@@ -590,7 +596,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                   className="space-y-4"
                 >
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Official Email
                     </label>
                     <input
@@ -599,13 +605,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       placeholder="name@organization.gov"
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 bg-white"
+                      className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 hover:bg-blue-800 transition-colors shadow-xs"
+                    className="w-full py-2.5 px-4 rounded-md text-sm font-semibold text-white bg-blue-900 dark:bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-600 transition-colors shadow-xs"
                   >
                     Send Password Reset Link
                   </button>
@@ -614,7 +620,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                     <button
                       type="button"
                       onClick={() => setMode('LOGIN')}
-                      className="text-xs text-slate-600 hover:text-slate-900"
+                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                     >
                       Back to Sign In
                     </button>

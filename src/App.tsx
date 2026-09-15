@@ -369,7 +369,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex font-sans selection:bg-blue-900 selection:text-white">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex font-sans selection:bg-blue-900 selection:text-white text-slate-900 dark:text-slate-100 transition-colors">
       {/* Enterprise Restrained Sidebar */}
       <Sidebar
         currentView={currentView}
