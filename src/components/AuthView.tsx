@@ -61,11 +61,11 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
     } else {
       const bidderUser: UserType = {
         id: 'usr-bidder-01',
-        name: 'Elena Vance',
-        fullName: 'Elena Vance',
-        email: 'elena.vance@aquatech.com',
+        name: 'Rajeshwari Ramanathan',
+        fullName: 'Rajeshwari Ramanathan',
+        email: 'rajeshwari.r@vigilancetech.in',
         role: 'BIDDER',
-        organization: 'AquaTech Solutions Ltd',
+        organization: 'Vigilance Tech Solutions Pvt Ltd',
         department: 'Tender & Contracts Division',
         isEmailVerified: true,
       };
@@ -315,9 +315,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, onAuthentica
                     className="p-2.5 rounded-md border border-slate-300 dark:border-slate-700 hover:border-blue-700 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-slate-800/80 text-left transition-colors group"
                   >
                     <div className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-900 dark:group-hover:text-blue-400">
-                      Bidder / Company
+                       Bidder / Company
                     </div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Elena Vance</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Rajeshwari (Vigilance Tech)</div>
                   </button>
                 </div>
               </div>
